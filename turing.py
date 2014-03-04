@@ -3,7 +3,7 @@
 # MIT Licensed. See COPYING.TXT for more information.
 """ Turing machine module, for source parsing and simulation """
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 from functools import wraps
 from collections import OrderedDict
 import re
@@ -166,6 +166,8 @@ class TuringMachine(OrderedDict):
         Constructor from the raw string data with the rules.
         """
         super(TuringMachine, self).__init__()
+        self._tape = {} # Tape is a dictionary whose keys are integers
+        self.index = 0 # Starting index in tape
         self.inv_dict = OrderedDict() # "Inverse" rules ("Not" and blank),
                                       # with lower priority
         quad_gen = (config_parser(*config) + action_parser(*action)
@@ -195,14 +197,41 @@ class TuringMachine(OrderedDict):
                 else:
                     self.inv_dict.setdefault(mci, []).append((symbs, act))
 
-    def read(self):
-        return "None" # Still there's no tape to read
+    @property
+    def tape(self):
+        return self._tape
+
+    @tape.setter
+    def tape(self, value):
+        if isinstance(value, dict):
+            self._tape = value.copy()
+        else:
+            self._tape = {k: v for k, v in enumerate(value)}
+
+    def scan(self):
+        return self.tape.get(self.index, "None")
+
+    def print(self, symbol):
+        if symbol == "None":
+            if self.index in self.tape:
+                del self.tape[self.index]
+        else:
+            self.tape[self.index] = symbol
 
     def perform(self, task):
-        return NotImplemented
+        if task == "R":
+            self.index += 1
+        elif task == "L":
+            self.index -= 1
+        elif task == "E":
+            self.print("None")
+        elif task.startswith("P"):
+            self.print(task[1:])
+        else:
+            raise ValueError("Unknown task")
 
     def move(self):
-        tasks, mco = self[self.mconf, self.read()]
+        tasks, mco = self[self.mconf, self.scan()]
         for task in tasks:
             self.perform(task)
         self.mconf = mco
@@ -214,4 +243,3 @@ class TuringMachine(OrderedDict):
                 if symb not in symbs:
                     return act
         raise TMLocked("No rule found for the current configuration")
-

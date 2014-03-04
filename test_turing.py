@@ -4,7 +4,7 @@
 # MIT Licensed. See COPYING.TXT for more information.
 """ Turing machine internals testing module """
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 from turing import (TMSyntaxError, TMLocked, tokenizer, raw_rule_generator,
                     sequence_cant_have, evaluate_symbol_query, TuringMachine)
 from pytest import raises, mark
@@ -203,3 +203,29 @@ class TestTuringMachine(object):
         assert tm.mconf == "q3"
         with raises(TMLocked):
             tm.move()
+
+    def test_two_rules_no_tape(self):
+        tm = TuringMachine("a -> b\nb None -> R c\n")
+        assert tm.mconf == "a"
+        tm.move()
+        assert tm.mconf == "b"
+        assert tm.scan() == "None"
+        tm.move()
+        assert tm.mconf == "c"
+        with raises(TMLocked):
+            tm.move()
+
+    def test_zero_one_zero_one(self):
+        tm = TuringMachine(
+            "a -> P0 R b\n"
+            "b -> P1 R a\n"
+        )
+        for unused in range(40):
+            assert tm.mconf == "a"
+            tm.move()
+            assert tm.mconf == "b"
+            tm.move()
+        tape = tm.tape
+        assert len(tape) == 80
+        for idx in range(80):
+            assert tape[idx] == str(idx % 2)
