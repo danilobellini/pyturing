@@ -33,3 +33,14 @@ class TestTokenizer(object):
     )
     expected = ["q3", "0", "->", "P1", "R", "P0", "R", "q2", "\n"]
     assert list(tokenizer(data)) == expected
+
+  def test_no_token_at_all(self):
+    assert list(tokenizer("\n\n\n")) == ["\n"] == list(tokenizer(""))
+
+  def test_empty_lines(self):
+    data = (
+      "\n\nq312 0 -> P1 R\n\n\n"
+      "              P0 L L q2\n\n"
+    )
+    expected = ["q312", "0", "->", "P1", "R", "P0", "L", "L", "q2", "\n"]
+    assert list(tokenizer(data)) == expected
