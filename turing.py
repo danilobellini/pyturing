@@ -14,6 +14,8 @@ def tokenizer(data):
             for token in blocks:
                 yield token
             blocks = ["\n"]
+            if line[0] == " ":
+                blocks.append(" ")
         blocks.extend(re.findall("->|\S+", line))
     for token in blocks:
         yield token

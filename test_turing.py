@@ -9,7 +9,7 @@ from turing import tokenizer
 class TestTokenizer(object):
 
   def test_simple_full_line_rule(self):
-    data = "q1 1 -> P0 R q2"
+    data = "q1 1 -> P0 R q2" # Newline token is always implicit
     expected = ["q1", "1", "->", "P0", "R", "q2", "\n"]
     assert list(tokenizer(data)) == expected
 
@@ -34,7 +34,7 @@ class TestTokenizer(object):
     expected = ["q3", "0", "->", "P1", "R", "P0", "R", "q2", "\n"]
     assert list(tokenizer(data)) == expected
 
-  def test_no_token_at_all(self):
+  def test_no_token_at_all(self): # Empty files have a single token
     assert list(tokenizer("\n\n\n")) == ["\n"] == list(tokenizer(""))
 
   def test_empty_lines(self):
@@ -43,4 +43,18 @@ class TestTokenizer(object):
       "              P0 L L q2\n\n"
     )
     expected = ["q312", "0", "->", "P1", "R", "P0", "L", "L", "q2", "\n"]
+    assert list(tokenizer(data)) == expected
+
+  def test_indent_arrow(self):
+    data = (
+      "q4 0 -> P1 R q3\n"
+      "   1 -> Px q4\n\n"
+      "   x -> P0 L q3\n\n"
+    )
+    expected = [ # The space is an indent token
+      "q4", "0", "->", "P1", "R", "q3", "\n",
+      " ", "1", "->", "Px", "q4", "\n",
+      " ", "x", "->", "P0", "L", "q3", "\n",
+    ]
+    print(list(tokenizer(data)))
     assert list(tokenizer(data)) == expected
