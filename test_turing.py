@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created on Tue Mar  4 11:05:50 2014
 # MIT Licensed. See COPYING.TXT for more information.
+""" Turing machine internals testing module """
 
 from __future__ import unicode_literals
 from turing import tokenizer

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created on Tue Mar  4 11:05:12 2014
 # MIT Licensed. See COPYING.TXT for more information.
+""" Main application file """
 
 from flask import Flask
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Created on Tue Mar  4 11:05:22 2014
 # MIT Licensed. See COPYING.TXT for more information.
+""" Turing machine module, for source parsing and simulation """
 
 from __future__ import unicode_literals
 import re
