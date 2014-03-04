@@ -9,3 +9,10 @@ Originally made for GCC (Garoa Code Competition)
 
 https://garoa.net.br/wiki/GCC_2014
 
+Installing
+----------
+
+More information about the Turing Machine
+-----------------------------------------
+
+
