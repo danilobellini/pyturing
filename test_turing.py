@@ -5,8 +5,8 @@
 """ Turing machine internals testing module """
 
 from __future__ import unicode_literals
-from turing import (TMSyntaxError, tokenizer, raw_rule_generator,
-                    sequence_cant_have, evaluate_symbol_query)
+from turing import (TMSyntaxError, TMLocked, tokenizer, raw_rule_generator,
+                    sequence_cant_have, evaluate_symbol_query, TuringMachine)
 from pytest import raises, mark
 p = mark.parametrize
 
@@ -189,3 +189,17 @@ class TestEvaluateSymbolQuery(object):
             evaluate_symbol_query(*symbs)
         with raises(TMSyntaxError):
             evaluate_symbol_query("Not", *symbs)
+
+    def test_empty_query(self):
+        assert evaluate_symbol_query() == (tuple(), False)
+
+
+class TestTuringMachine(object):
+
+    def test_one_rule_no_tape(self):
+        tm = TuringMachine("q4 -> q3")
+        assert tm.mconf == "q4" # Default starting state is the first m-conf
+        tm.move()
+        assert tm.mconf == "q3"
+        with raises(TMLocked):
+            tm.move()
