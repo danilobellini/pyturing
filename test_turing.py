@@ -62,7 +62,30 @@ class TestTokenizer(object):
             " ", "1", "->", "Px", "q4", "\n",
             " ", "x", "->", "P0", "L", "q3", "\n",
         ]
-        print(list(tokenizer(data)))
+        assert list(tokenizer(data)) == expected
+
+    def test_single_mconf_in_first_line(self):
+        data = (
+            "A \n"
+            "  b -> Pxx2 R E alpha\n"
+        )
+        expected = ["A", "b", "->", "Pxx2", "R", "E", "alpha", "\n",]
+        assert list(tokenizer(data)) == expected
+
+    def test_square_brackets_in_symbols(self):
+        data = (
+            "q1 \n"
+            "  [0 4] -> Pinf R aba\n"
+            "  [1 '2' 3] -> P-1 k\n"
+            "  [xTj'c] -> P0\nç  \n\n"
+            "  - -> +"
+        )
+        expected = [ # The space is an indent token
+            "q1", "[", "0", "4", "]", "->", "Pinf", "R", "aba", "\n",
+            " ", "[", "1", "'2'", "3", "]", "->", "P-1", "k", "\n",
+            " ", "[", "xTj'c", "]", "->", "P0", "ç", "\n",
+            " ", "-", "->", "+", "\n",
+        ]
         assert list(tokenizer(data)) == expected
 
 

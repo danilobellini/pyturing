@@ -15,6 +15,13 @@ class TMSyntaxError(SyntaxError):
     """ Syntax errors for a Turing machine code (rules description) """
 
 
+TOKENIZER_REGEX = re.compile(
+    "\[|\]"       # Single character special tokens
+    "|->"         # Two character special token
+    "|[^\s\[\]]+" # Identifiers and reserved words
+)
+
+
 def tokenizer(data):
     """
     Lexical tokenizer for raw text data containing Turing machine rules.
@@ -27,7 +34,7 @@ def tokenizer(data):
             blocks = ["\n"]
             if line[0] == " ":
                 blocks.append(" ")
-        blocks.extend(re.findall("->|\S+", line))
+        blocks.extend(re.findall(TOKENIZER_REGEX, line))
     for token in blocks:
         yield token
     yield "\n"
