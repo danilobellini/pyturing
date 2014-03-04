@@ -8,7 +8,13 @@ import re
 __all__ = ["tokenizer"]
 
 def tokenizer(data):
+    blocks = []
     for line in data.splitlines():
-        for token in re.findall("->|\S+", data):
-            yield token
-        yield "\n"
+        if "->" in blocks and "->" in line:
+            for token in blocks:
+                yield token
+            blocks = ["\n"]
+        blocks.extend(re.findall("->|\S+", line))
+    for token in blocks:
+        yield token
+    yield "\n"
