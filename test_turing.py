@@ -229,3 +229,43 @@ class TestTuringMachine(object):
         assert len(tape) == 80
         for idx in range(80):
             assert tape[idx] == str(idx % 2)
+
+    def test_turing_first_example(self):
+        tm1 = TuringMachine( # On p. 233 of his article
+            "b None -> P0  R c\n"
+            "c None ->   R   e\n"
+            "e None -> P1  R f\n"
+            "f None ->   R   b\n"
+        )
+        tm2 = TuringMachine( # On p. 234 of his article, the same idea
+            "b None ->   P0   b\n"
+            "     0 -> R R P1 b\n"
+            "     1 -> R R P0 b\n"
+        )
+        assert tm1.mconf == tm2.mconf == "b"
+        assert tm1.index == tm2.index == 0
+        tm1.move() # Syncronizing them
+        tm2.move()
+        for idx in range(50):
+            assert tm2.mconf == "b"
+
+            assert tm1.index == 2 * idx + 1
+            tm1.move()
+            assert tm1.index == 2 * idx + 2
+            tm1.move()
+            assert tm1.index == 2 * idx + 3
+
+            assert tm2.index == 2 * idx
+            tm2.move()
+            assert tm2.index == 2 * idx + 2
+
+            assert tm1.tape == tm2.tape
+
+        tape = tm1.tape
+        tape_length = abs(max(tm1.tape) - min(tm1.tape))
+        assert tape_length == 100
+        for idx in range(100):
+            if idx % 2 == 0:
+                assert tape[idx] == str(idx // 2 % 2)
+            else:
+                assert idx not in tape # "None"

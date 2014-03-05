@@ -174,9 +174,8 @@ class TuringMachine(OrderedDict):
                     for config, action in raw_rule_generator(data))
         last_m = ""
         for mconfs_in, symbols_in, tasks, mco in quad_gen:
-
             # Rule m-configuration determination
-            if mconfs_in == " ":
+            if mconfs_in == (" ",):
                 if last_m:
                     mconfs_in = last_m
                 else:
