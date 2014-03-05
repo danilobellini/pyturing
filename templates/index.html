@@ -16,15 +16,16 @@
     <div class="container theme-showcase" role="main">
       <h1>Turing Machine</h1>
       <div class="principal">
-        <textarea rows="10" cols="50">
+<form action="/" method="POST">
+        <textarea name="machine" rows="10" cols="50">
 b None ->  P0  R  c
 c None ->    R    e
 e None ->  P1  R  f
 f None ->    R    b
         </textarea>
         <button id="save" type="button" class="btn btn-default">Save</button>
-        <button id="run" type="button" class="btn btn-default">Simulate</button>
-        <textarea rows="10" cols="50">
+        <input id="run" type="submit" class="btn btn-default" value="Simulate"></button>
+        <textarea name="tape" rows="10" cols="50">
 # The code below is the tape. Whitespaces are
 # just separators for symbols. The starting
 # state is the first state in rules above,
@@ -38,9 +39,14 @@ f None ->    R    b
 # machine, see there for the source code and
 # a lot of more details:
 # https://github.com/NicolasFrancaX/GCodeCompetition
+#
+# (For now, the "Save" button still does
+# nothing).
 None
 
         </textarea>
+</form>
+
       </div>
     </div>
     <div class="footer">
