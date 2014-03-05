@@ -6,26 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Turing Machine online in Flask</title>
     <!-- Bootstrap core CSS -->
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for("static", filename="css/bootstrap.min.css") }}" rel="stylesheet">
     <!-- Bootstrap theme -->
-    <link href="../static/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="{{ url_for("static", filename="css/bootstrap-theme.min.css") }}" rel="stylesheet">
     <!-- Custom styles for this template -->
-    <link href="../static/css/theme.css" rel="stylesheet">
+    <link href="{{ url_for("static", filename="css/theme.css") }}" rel="stylesheet">
   </head>
   <body role="document" style>
     <div class="container theme-showcase" role="main">
       <h1>Turing Machine</h1>
       <div class="principal">
-        <textarea rows="10" cols="50"></textarea>
+        <textarea rows="10" cols="50">
+b None ->  P0  R  c
+c None ->    R    e
+e None ->  P1  R  f
+f None ->    R    b
+        </textarea>
         <button id="save" type="button" class="btn btn-default">Save</button>
         <button id="run" type="button" class="btn btn-default">Simulate</button>
-        <textarea rows="10" cols="50"></textarea>
+        <textarea rows="10" cols="50">
+# The code below is the tape. Whitespaces are
+# just separators for symbols. The starting
+# state is the first state in rules above,
+# and there's no 'ending state', for now you
+# should create a state that doesn't have
+# transitions to use as an ending state.
+# Also, only the first 3000 transitions are
+# computed. Everything could be better
+# parametrized, this is only a first version
+# of a project of simulating the Turing
+# machine, see there for the source code and
+# a lot of more details:
+# https://github.com/NicolasFrancaX/GCodeCompetition
+None
+
+        </textarea>
       </div>
     </div>
     <div class="footer">
       The MIT License (MIT) - Copyright (c) 2014 Danilo J. S. Bellini and Nicolas França
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="{{ url_for("static", filename="js/bootstrap.min.js") }}"></script>
   </body>
 </html>
