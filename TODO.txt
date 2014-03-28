@@ -1,0 +1,25 @@
+Here are some ideas that might be implemented in this project.
+
+- Allow comments (from "#")
+- m-functions
+- [Web] Turing machine simulation with AJAX
+- [Web] Multiple input for simulation, with "expected outputs", with colors
+  showing whether actual outputs matches the expected ones (for Coding Dojos)
+- Allow "final states"
+- [Web] Syntax highlighting
+- [Web] Easier typing (something like vim autoindent and expandtabs)
+- [Web] Save the turing machine (anonymous gists alike)
+- Find the machine's standard description ("DADDCRDAA;..."), assuming all
+  allowed symbols are the ones used explicitly by at least some rule, in the
+  order of their first occurrences
+- Find the machine's description number ("3133253117...")
+- "Disassembly" machine descriptions to rules using states q1, q2, ... and
+  symbols None, S1, S2, ...
+- [Web] Links for Turing machines from their descriptions (REST)
+- [Web] Line numbering for the editor
+- Line number for error messages as an attribute for the exception
+- [Web] Show the error messages
+- [CLI] Create a basic Command-Line Interface that "runs" a given Turing
+  machine file with a given "input" (starting tapes) file, like calling
+  "./turing.py my_machine.tm tests.tape"
+
