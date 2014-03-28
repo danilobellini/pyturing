@@ -287,3 +287,120 @@ class TestTuringMachine(object):
                 assert tape[idx] == str(idx // 2 % 2)
             else:
                 assert idx not in tape # "None"
+
+    @p("binary_number_string", ["0011", "010", "10", "110", "11", "0", "111",
+                                "101", "111100", "1010"])
+    def test_mod_3_equals_zero(self, binary_number_string):
+        code = "\n".join(
+             # Starting with an empty tape, adds the digits to the tape
+            ["pre-start -> L"] +
+            ["             R P{}".format(el) for el in binary_number_string] +
+            ["             goto-start",
+
+             # Go back with the "cursor" to the first symbol in tape
+             "goto-start",
+             "  None -> R start",
+             "       -> L goto-start",
+
+             # Starts with zero in mind, so modulo is zero
+             "start -> mod0",
+
+             # Every digit d appended to x makes the new number y = x * 2 + d,
+             # and the same follows in modulo 3
+             "mod0",
+             "  0    -> R mod0",
+             "  1    -> R mod1",
+             "  None -> L return_T",
+             "mod1",
+             "  0    -> R mod2",
+             "  1    -> R mod0",
+             "  None -> L return_F",
+             "mod2",
+             "  0    -> R mod1",
+             "  1    -> R mod2",
+             "  None -> L return_F",
+
+             # Clears the tape and "prints" to it the desired result
+             "return_T",
+             "  [0 1] -> E L return_T",
+             "  None  -> R PT loop",
+             "return_F",
+             "  [0 1] -> E L return_F",
+             "  None  -> R PF loop",
+
+             # Deadlock
+             "loop -> loop",
+            ]
+        )
+
+        number = int(binary_number_string, base=2)
+        all_numbers_tape = dict(enumerate(binary_number_string))
+        result = "T" if number % 3 == 0 else "F"
+        tm = TuringMachine(code)
+        print(code)
+        assert tm.tape == {}
+        assert tm.index == 0
+        assert tm.mconf == "pre-start"
+
+        # Puts the digits into the machine
+        tm.move()
+        assert tm.tape == all_numbers_tape
+        assert tm.index == len(binary_number_string) - 1
+        assert tm.mconf == "goto-start"
+
+        # Go back to the beginning
+        for digit in reversed(binary_number_string):
+            assert tm.scan() == digit
+            old_idx = tm.index
+            tm.move()
+            assert tm.tape == all_numbers_tape
+            assert tm.index == old_idx - 1
+            assert tm.mconf == "goto-start"
+        assert tm.scan() == "None"
+        assert tm.index == -1
+        tm.move()
+        assert tm.tape == all_numbers_tape
+        assert tm.index == 0
+        assert tm.mconf == "start"
+
+        # Initialization
+        tm.move()
+        assert tm.tape == all_numbers_tape
+        assert tm.index == 0
+        assert tm.mconf == "mod0"
+
+        # Follow the digits
+        mod_value = 0
+        for idx, digit in enumerate(binary_number_string, 1):
+            assert tm.scan() == digit
+            tm.move()
+            mod_value = (mod_value * 2 + int(digit, base=2)) % 3
+            assert tm.tape == all_numbers_tape
+            assert tm.index == idx
+            assert tm.mconf == "mod{}".format(mod_value)
+
+        # After last digit
+        return_mconf = "return_" + result
+        assert tm.scan() == "None"
+        tm.move()
+        assert tm.tape == all_numbers_tape
+        assert tm.index == len(binary_number_string) - 1
+        assert tm.mconf == return_mconf
+
+        # Erases digit per digit
+        for digit in reversed(binary_number_string):
+            assert tm.scan() == digit
+            old_idx = tm.index
+            tm.move()
+            assert tm.tape == {k: v for k, v in all_numbers_tape.items()
+                                    if k < old_idx}
+            assert tm.index == old_idx - 1
+            assert tm.mconf == return_mconf
+
+        # Returns!
+        assert tm.scan() == "None"
+        for unused in range(5):
+          tm.move()
+          assert tm.tape == {0: result}
+          assert tm.index == 0
+          assert tm.mconf == "loop"
