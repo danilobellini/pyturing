@@ -34,13 +34,15 @@ def tokenizer(data):
     """
     blocks = []
     for line in data.splitlines():
-        if "->" in blocks and "->" in line:
-            for token in blocks:
-                yield token
-            blocks = ["\n"]
-            if line[0] == " ":
-                blocks.append(" ")
-        blocks.extend(re.findall(TOKENIZER_REGEX, line))
+        if line:
+            keep_last = line.startswith(" ")
+            if "->" in blocks and ("->" in line or not keep_last):
+                for token in blocks:
+                    yield token
+                blocks = ["\n"]
+                if keep_last:
+                    blocks.append(" ")
+            blocks.extend(re.findall(TOKENIZER_REGEX, line))
     for token in blocks:
         yield token
     yield "\n"
@@ -64,6 +66,7 @@ def raw_rule_generator(data):
             if action:
                 if not config:
                     raise TMSyntaxError("Incomplete rule (missing config)")
+                print(config, action)
                 yield config, action
                 config, action = [], []
                 block = config

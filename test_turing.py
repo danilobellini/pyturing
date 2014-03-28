@@ -77,7 +77,7 @@ class TestTokenizer(object):
             "q1 \n"
             "  [0 4] -> Pinf R aba\n"
             "  [1 '2' 3] -> P-1 k\n"
-            "  [xTj'c] -> P0\nç  \n\n"
+            "  [xTj'c] -> P0\n ç  \n\n"
             "  - -> +"
         )
         expected = [ # The space is an indent token
@@ -114,7 +114,7 @@ class TestRawRuleGenerator(object):
             next(rgen)
 
     @p("rule", ["  ->", "->", "\n->", "->\n\n", "->\n\nq0 -> q1"])
-    def test_one_and_a_arrow_only_rule(self, rule):
+    def test_one_and_an_arrow_only_rule(self, rule):
         rgen = raw_rule_generator("q1 1 -> E q0\n" + rule)
         assert next(rgen) == (["q1", "1"], ["E", "q0"])
         with raises(TMSyntaxError):
@@ -134,6 +134,24 @@ class TestRawRuleGenerator(object):
         assert next(rgen) == ([" ", "x"], ["P0", "L", "P1", "q3"])
         assert next(rgen) == (["q3", "0"], ["P1", "q4"])
         assert next(rgen) == ([" ", "1"], ["P0", "L", "q3"])
+        with raises(StopIteration):
+            next(rgen)
+
+    def test_group_rules(self):
+        rgen = raw_rule_generator("\n".join([
+            "A",
+            "  0 -> P1 R",
+            "       P1 R B",
+            "B",
+            "  0 -> P0 R C",
+            "  1 -> P0 L A",
+            "C",
+            "  -> P1 B",
+        ]))
+        assert next(rgen) == (["A", "0"], ["P1", "R", "P1", "R", "B"])
+        assert next(rgen) == (["B", "0"], ["P0", "R", "C"])
+        assert next(rgen) == ([" ", "1"], ["P0", "L", "A"])
+        assert next(rgen) == (["C"], ["P1", "B"])
         with raises(StopIteration):
             next(rgen)
 
@@ -198,7 +216,7 @@ class TestTuringMachine(object):
 
     def test_one_rule_no_tape(self):
         tm = TuringMachine("q4 -> q3")
-        assert tm.mconf == "q4" # Default starting state is the first m-conf
+        assert tm.mconf == "q4" # First m-conf in code is first in simulation
         tm.move()
         assert tm.mconf == "q3"
         with raises(TMLocked):
