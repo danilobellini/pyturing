@@ -8,8 +8,9 @@ from functools import wraps
 from collections import OrderedDict
 import re
 
-__all__ = ["TMSyntaxError", "TMLocked", "tokenizer", "raw_rule_generator",
-           "sequence_cant_have", "evaluate_symbol_query", "config_parser",
+__all__ = ["TMSyntaxError", "TMLocked", "pre_tokenizer", "tokenizer",
+           "raw_rule_generator", "sequence_cant_have",
+           "evaluate_symbol_query", "config_parser",
            "action_parser", "TuringMachine"]
 
 
@@ -19,6 +20,17 @@ class TMSyntaxError(SyntaxError):
 
 class TMLocked(Exception):
     """ No action assigned to current configuration, the machine is locked """
+
+
+def pre_tokenizer(data, comment_symbol="#"):
+    """
+    Line generator that removes empty lines and comments from the given
+    multiline string.
+    """
+    for line_raw in data.splitlines():
+        line = line_raw.split(comment_symbol, 1)[0]
+        if line.rsplit():
+            yield line
 
 
 TOKENIZER_REGEX = re.compile(
@@ -33,16 +45,15 @@ def tokenizer(data):
     Lexical tokenizer for raw text data containing Turing machine rules.
     """
     blocks = []
-    for line in data.splitlines():
-        if line:
-            keep_last = line.startswith(" ")
-            if "->" in blocks and ("->" in line or not keep_last):
-                for token in blocks:
-                    yield token
-                blocks = ["\n"]
-                if keep_last:
-                    blocks.append(" ")
-            blocks.extend(re.findall(TOKENIZER_REGEX, line))
+    for line in pre_tokenizer(data):
+        keep_last = line.startswith(" ")
+        if "->" in blocks and ("->" in line or not keep_last):
+            for token in blocks:
+                yield token
+            blocks = ["\n"]
+            if keep_last:
+                blocks.append(" ")
+        blocks.extend(re.findall(TOKENIZER_REGEX, line))
     for token in blocks:
         yield token
     yield "\n"

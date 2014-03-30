@@ -5,10 +5,74 @@
 """ Turing machine internals testing module """
 
 from __future__ import unicode_literals, print_function
-from turing import (TMSyntaxError, TMLocked, tokenizer, raw_rule_generator,
-                    sequence_cant_have, evaluate_symbol_query, TuringMachine)
+from turing import (TMSyntaxError, TMLocked, pre_tokenizer, tokenizer,
+                    raw_rule_generator, sequence_cant_have,
+                    evaluate_symbol_query, TuringMachine)
 from pytest import raises, mark
+from types import GeneratorType
 p = mark.parametrize
+
+
+class TestPreTokenizer(object):
+
+    def test_no_change(self):
+        data = [
+            "q1 1 -> P0 R q2",
+            "   0 -> P1 q2",
+            "q2",
+            "  1 -> E L q1",
+        ]
+        gen = pre_tokenizer("\n".join(data))
+        assert isinstance(gen, GeneratorType)
+        assert list(gen) == data
+
+    def test_empty_remove(self):
+        data = [
+            "q1", "",
+            "  aba ",
+            "-> ---", "  ",
+        ]
+        gen = pre_tokenizer("\n".join(data))
+        assert isinstance(gen, GeneratorType)
+        assert list(gen) == [el for el in data if el.strip()]
+
+    def test_default_comment_remove(self):
+        data = [
+            "# 123",
+            "q1 1 -> P0 q # R # q2",
+            "  #", "",
+            "     -> P1 # q2", "#",
+            "q1 -", " ",
+        ]
+        expected = [
+            "q1 1 -> P0 q ",
+            "     -> P1 ",
+            "q1 -",
+        ]
+        gen = pre_tokenizer("\n".join(data))
+        assert isinstance(gen, GeneratorType)
+        assert list(gen) == expected
+
+    @p("comment_symbol", ["#", ";", "//", "--", "%"])
+    def test_any_comment_remove(self, comment_symbol):
+        data = [
+            "{symbol}{symbol}{symbol}", "", "{symbol}",
+            "q1{symbol}",
+            "  {symbol}", "",
+            "       ->{symbol}", " R{symbol} -> 2",
+            "       q2  {symbol}", "",
+            "A{symbol}B{symbol}C", "{symbol} ->",
+        ]
+        expected = [
+            "q1",
+            "       ->", " R",
+            "       q2  ",
+            "A",
+        ]
+        gen = pre_tokenizer("\n".join(data).format(symbol=comment_symbol),
+                            comment_symbol=comment_symbol)
+        assert isinstance(gen, GeneratorType)
+        assert list(gen) == expected
 
 
 class TestTokenizer(object):

@@ -1,6 +1,5 @@
 Here are some ideas that might be implemented in this project.
 
-- Allow comments (from "#")
 - m-functions
 - [Web] Turing machine simulation with AJAX
 - [Web] Multiple input for simulation, with "expected outputs", with colors

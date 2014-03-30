@@ -142,7 +142,7 @@ How to use
 
 The Turing Machine is a machine with rules/instructions, such as::
 
-  q1 0 -> P1 R q2
+  q1 0 -> P1 R q2     # Comments starts with the "#" symbol
 
 That says that a machine in the m-configuration ``q1`` and scanning the symbol
 ``0`` should [P]rint the symbol ``1``, move to the [R]ight and change to the
