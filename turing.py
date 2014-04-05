@@ -175,7 +175,7 @@ class TuringMachine(OrderedDict):
     computable numbers, with an application to the Entscheidungsproblem"
     (1936).
     """
-    def __init__(self, data):
+    def __init__(self, data=""):
         """
         Constructor from the raw string data with the rules.
         """
@@ -232,14 +232,16 @@ class TuringMachine(OrderedDict):
             self.tape[self.index] = symbol
 
     def perform(self, task):
-        if task == "R":
+        if task == "R": # Right
             self.index += 1
-        elif task == "L":
+        elif task == "L": # Left
             self.index -= 1
-        elif task == "E":
+        elif task == "E": # Erase
             self.print("None")
-        elif task.startswith("P"):
+        elif task.startswith("P"): # Print
             self.print(task[1:])
+        elif task == "N": # No operation (used for "not left nor right")
+            pass
         else:
             raise ValueError("Unknown task")
 

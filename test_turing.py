@@ -278,6 +278,29 @@ class TestEvaluateSymbolQuery(object):
 
 class TestTuringMachine(object):
 
+    @p(("task", "index_delta", "tape_list_before", "tape_dict_after"), [
+      ("L", -1, [], {}),
+      ("R",  1, [], {}),
+      ("N",  0, [], {}),
+      ("L", -1, ["A"], {0: "A"}),
+      ("R",  1, ["A"], {0: "A"}),
+      ("N",  0, ["A"], {0: "A"}),
+      ("PNone", 0, [], {}),
+      ("PNone", 0, ["A"], {}),
+      ("P1", 0, [], {0: "1"}),
+      ("P1", 0, ["A"], {0: "1"}),
+    ])
+    def test_perform_one_task(self, task, index_delta,
+                                    tape_list_before, tape_dict_after):
+        tm = TuringMachine() # Without rules
+        assert tm.index == 0
+        assert tm.tape == {}
+        tm.tape = tape_list_before
+        assert tm.tape == dict(enumerate(tape_list_before))
+        tm.perform(task)
+        assert tm.index == index_delta
+        assert tm.tape == tape_dict_after
+
     def test_one_rule_no_tape(self):
         tm = TuringMachine("q4 -> q3")
         assert tm.mconf == "q4" # First m-conf in code is first in simulation
