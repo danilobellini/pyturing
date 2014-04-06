@@ -73,12 +73,12 @@ file ``test_turing.py`` is the one that should be run with py.test::
   ======================== test session starts =========================
   platform linux -- Python 3.3.0 -- pytest-2.4.0.dev2
   plugins: cov
-  collected 68 items
+  collected 99 items
 
   test_turing.py .......................................................
-  .............
+  ............................................
 
-  ===================== 68 passed in 0.13 seconds ======================
+  ===================== 99 passed in 0.25 seconds ======================
 
 Running with code coverage statistics in Python 2.7.3 (with the``pytest-cov``
 package)::
@@ -87,16 +87,16 @@ package)::
   ======================== test session starts =========================
   platform linux2 -- Python 2.7.3 -- pytest-2.4.0.dev2
   plugins: timeout, xdist, cov
-  collected 68 items
+  collected 99 items
 
   test_turing.py .......................................................
-  .............
+  ............................................
   ---------- coverage: platform linux2, python 2.7.3-final-0 -----------
   Name     Stmts   Miss  Cover
   ----------------------------
-  turing     139      4    97%
+  turing     139      3    98%
 
-  ===================== 68 passed in 0.15 seconds ======================
+  ===================== 99 passed in 0.21 seconds ======================
 
 As shown above, the core API was tested under Python 3.3.0 and 2.7.3, working
 on both successfully with the same code. The tests includes the two examples

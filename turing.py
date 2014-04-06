@@ -217,9 +217,9 @@ class TuringMachine(OrderedDict):
     @tape.setter
     def tape(self, value):
         if isinstance(value, dict):
-            self._tape = value.copy()
+            self._tape = {k: v for k, v in value.items() if v != "None"}
         else:
-            self._tape = {k: v for k, v in enumerate(value)}
+            self._tape = {k: v for k, v in enumerate(value) if v != "None"}
 
     def scan(self):
         return self.tape.get(self.index, "None")

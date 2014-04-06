@@ -278,17 +278,78 @@ class TestEvaluateSymbolQuery(object):
 
 class TestTuringMachine(object):
 
+    @p("tape_list", [
+        [], ["A"], ["1", "2"], ("1", "2", "3"),
+    ])
+    def test_tape_simple_assignment_without_blank(self, tape_list):
+        tape_dict = dict(enumerate(tape_list))
+        tm_list = TuringMachine() # Without rules
+        tm_dict = TuringMachine()
+        assert tm_list.index == tm_dict.index == 0
+        assert tm_list.tape == tm_dict.tape == {}
+        tm_list.tape = tape_list
+        tm_dict.tape = tape_dict
+        assert tm_list.index == tm_dict.index == 0
+        assert tm_list.tape == tm_dict.tape == tape_dict
+        for symbol in tape_list:
+            assert tm_list.scan() == tm_dict.scan() == symbol
+            tm_list.perform("R")
+            tm_dict.perform("R")
+
+    def test_tape_str_assignment(self):
+        tm = TuringMachine() # Without rules
+        tape = __import__("string").ascii_letters
+        tm.tape = tape
+        assert tm.tape == dict(enumerate(tape))
+        for symbol in tape:
+            assert tm.scan() == symbol
+            tm.perform("R")
+
+    @p("blank_index", [0, 1, 3, 27, -1, -5])
+    def test_tape_list_assignment_with_blank(self, blank_index):
+        tm = TuringMachine() # Without rules
+        tape = list(__import__("string").ascii_letters)
+        tape[blank_index] = "None"
+        expected_tape = {k: v for k, v in enumerate(tape)
+                              if k != blank_index % len(tape)}
+        tm.tape = tape
+        assert len(tm.tape) == len(tape) - 1
+        assert tm.tape == expected_tape
+        for symbol in tape:
+            assert tm.scan() == symbol
+            tm.perform("R")
+
+    @p("blank_index", [0, 3, 27, -1])
+    @p("delta", [-2, -1, 0, 1, 2])
+    def test_tape_dict_assignment(self, blank_index, delta):
+        tm = TuringMachine() # Without rules
+        tape = list(__import__("string").ascii_letters)
+        tape[blank_index] = "None"
+        expected_tape = {k + delta: v for k, v in enumerate(tape)
+                                      if k != blank_index % len(tape)}
+        tape_dict = dict(enumerate(tape, delta))
+        tm.tape = tape_dict
+        assert tm.tape == expected_tape
+        assert tm.index == 0
+        assert tm.scan() == tape[-delta] if delta <= 0 else "None"
+        for task in delta * "R" + -delta * "L":
+            tm.perform(task)
+        assert tm.index == delta
+        for symbol in tape:
+            assert tm.scan() == symbol
+            tm.perform("R")
+
     @p(("task", "index_delta", "tape_list_before", "tape_dict_after"), [
-      ("L", -1, [], {}),
-      ("R",  1, [], {}),
-      ("N",  0, [], {}),
-      ("L", -1, ["A"], {0: "A"}),
-      ("R",  1, ["A"], {0: "A"}),
-      ("N",  0, ["A"], {0: "A"}),
-      ("PNone", 0, [], {}),
-      ("PNone", 0, ["A"], {}),
-      ("P1", 0, [], {0: "1"}),
-      ("P1", 0, ["A"], {0: "1"}),
+        ("L", -1, [], {}),
+        ("R",  1, [], {}),
+        ("N",  0, [], {}),
+        ("L", -1, ["A"], {0: "A"}),
+        ("R",  1, ["A"], {0: "A"}),
+        ("N",  0, ["A"], {0: "A"}),
+        ("PNone", 0, [], {}),
+        ("PNone", 0, ["A"], {}),
+        ("P1", 0, [], {0: "1"}),
+        ("P1", 0, ["A"], {0: "1"}),
     ])
     def test_perform_one_task(self, task, index_delta,
                                     tape_list_before, tape_dict_after):
