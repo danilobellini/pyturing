@@ -152,7 +152,7 @@ def config_parser(*args):
     respectively.
     """
     if len(args) == 1:
-      return args, []
+        return args, []
     return args[:1], args[1:] # For now, only a single m-conf
 
 
@@ -161,10 +161,10 @@ def action_parser(*args):
     <action> ::= <behaviour> <m-conf>
     <behaviour> ::= {<task>}
     <m-conf> ::= <id>
-    <task> ::= {"L" | "R" | "P" <id> | "E" | "PNone"}
+    <task> ::= {"L" | "R" | "P" <id> | "E" | "N" | "PNone"}
 
     The "P" (for the printing task) isn't separated from the <id> by the
-    tokenizer.
+    tokenizer. See TuringMachine.perform for more information about the tasks.
     """
     return args[:-1], args[-1]
 
@@ -178,6 +178,15 @@ class TuringMachine(OrderedDict):
     def __init__(self, data=""):
         """
         Constructor from the raw string data with the rules.
+        The starting complete configuration is:
+
+        - self.index = 0
+        - self.tape = []
+        - self.mconf = First m-configuration in data (machine source)
+
+        If data is empty (no rule is given), self.mconf isn't initialized,
+        and should be assigned before any rule querying self[m_conf, symbol]
+        and before any self.move() call.
         """
         super(TuringMachine, self).__init__()
         self._tape = {} # Tape is a dictionary whose keys are integers
@@ -222,9 +231,19 @@ class TuringMachine(OrderedDict):
             self._tape = {k: v for k, v in enumerate(value) if v != "None"}
 
     def scan(self):
+        """
+        Returns the current symbol as a string, or "None".
+
+        Perform one rule in the machine, changing its current
+        configuration (self.mconf and self.index) accordingly.
+        """
         return self.tape.get(self.index, "None")
 
     def print(self, symbol):
+        """
+        Perform a print task, printing the given symbol in the tape, or
+        erasing if symbol is "None".
+        """
         if symbol == "None":
             if self.index in self.tape:
                 del self.tape[self.index]
@@ -232,6 +251,12 @@ class TuringMachine(OrderedDict):
             self.tape[self.index] = symbol
 
     def perform(self, task):
+        """
+        Perform one single task in the Turing machine, given the task string.
+        The operations are "P", "E", "L", "R" and "N", following [P]rint,
+        [E]rase, [L]eft, [R]ight and [N]o operation. The "P" operation should
+        be followed with the symbol to be print, such as "P1" to print "1".
+        """
         if task == "R": # Right
             self.index += 1
         elif task == "L": # Left
@@ -246,6 +271,10 @@ class TuringMachine(OrderedDict):
             raise ValueError("Unknown task")
 
     def move(self):
+        """
+        Perform one rule in the machine, changing its complete configuration
+        (self.index, self.tape and self.mconf) where needed, accordingly.
+        """
         tasks, mco = self[self.mconf, self.scan()]
         for task in tasks:
             self.perform(task)

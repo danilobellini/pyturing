@@ -281,7 +281,7 @@ class TestTuringMachine(object):
     @p("tape_list", [
         [], ["A"], ["1", "2"], ("1", "2", "3"),
     ])
-    def test_tape_simple_assignment_without_blank(self, tape_list):
+    def test_tape_list_and_dict_assignment_without_blank(self, tape_list):
         tape_dict = dict(enumerate(tape_list))
         tm_list = TuringMachine() # Without rules
         tm_dict = TuringMachine()
@@ -548,7 +548,7 @@ class TestTuringMachine(object):
         # Returns!
         assert tm.scan() == "None"
         for unused in range(5):
-          tm.move()
-          assert tm.tape == {0: result}
-          assert tm.index == 0
-          assert tm.mconf == "loop"
+            tm.move()
+            assert tm.tape == {0: result}
+            assert tm.index == 0
+            assert tm.mconf == "loop"

@@ -127,8 +127,8 @@ running the tests. For the code coverage shown above, it also needs the
 ``pytest-cov`` package.
 
 
-Turing DSL (Domain Specific Language) specification
----------------------------------------------------
+Turing DSL (Domain Specific Language)
+-------------------------------------
 
 The Turing Machine is a machine with rules/instructions, such as::
 
