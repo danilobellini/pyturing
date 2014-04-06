@@ -63,55 +63,37 @@ find it on the links above.
 Testing
 -------
 
-The tests were done on the project core (i.e., the API), in a TDD-like
-fashion.
+The tests are done over the project core (i.e., the API), in a TDD-like
+fashion. All tests can be run with py.test directly or in a virtual
+environment, needing pytest-cov package for code coverage statistics. The
+easier way to run all tests in all Python versions sandboxed in a virtual
+environment each one is using tox::
 
-The tests were done with py.test, a requirement for running the tests. The
-file ``test_turing.py`` is the one that should be run with py.test::
+  $ sudo pip install tox
+  $ tox
 
-  ~/pyturing $ py.test test_turing.py
-  ======================== test session starts =========================
-  platform linux -- Python 3.3.0 -- pytest-2.4.0.dev2
-  plugins: cov
-  collected 113 items
-
-  test_turing.py .......................................................
-  ..........................................................
-
-  ===================== 113 passed in 0.29 seconds =====================
-
-Running with code coverage statistics in Python 2.7.3 (with the``pytest-cov``
-package)::
-
-  ~/pyturing $ py.test-2.7 test_turing.py --cov turing
-  ======================== test session starts =========================
-  platform linux2 -- Python 2.7.3 -- pytest-2.4.0.dev2
-  plugins: timeout, xdist, cov
-  collected 113 items
-
-  test_turing.py .......................................................
-  ..........................................................
-  ---------- coverage: platform linux2, python 2.7.3-final-0 -----------
-  Name     Stmts   Miss  Cover
-  ----------------------------
-  turing     149      0   100%
-
-  ===================== 113 passed in 0.26 seconds =====================
-
-As shown above, the core API was tested under Python 3.3.0 and 2.7.3, working
-on both successfully with the same code. The tests includes the two examples
-said in the "About the Turing Machine" section, although these aren't for
-finding something like a "final" m-configuration (indeed, they're endless
-examples).
+It'll run with Python versions 2.7, 3.2 and 3.3. This package works in these
+Python versions successfully with the same single code. The tests includes
+the two examples said in the "About the Turing Machine" section, although
+these aren't for finding something like a "final" m-configuration (indeed,
+they're endless examples).
 
 
 Installing
 ----------
 
-This is a common Flask project, needing the flask itself for practical use.
-Tested with Flask 0.9 (Python 2.7.3) and Flask 0.10.1 (Python 3.3.0). It can
-be installed in a virtual environment easily after cloning the project from
-GitHub::
+For installing the API, just install the package as usual::
+
+  $ sudo python setup.py install
+
+or, given ``git`` and ``pip`` are installed::
+
+  $ sudo pip install git+https://github.com/danilobellini/pyturing
+
+For the web UI, this is a common Flask project, needing the flask itself for
+practical use. It was [manually] tested with Flask 0.9 (Python 2.7.3) and
+Flask 0.10.1 (Python 3.3.0). It can be installed in a virtual environment
+easily after cloning the project from GitHub::
 
   $ virtualenv --distribute --python=python3.3 venv
   $ source venv/bin/activate
@@ -121,10 +103,6 @@ GitHub::
 This is mainly for debugging and evaluation. As a flask project, for deploying
 you'll need an IaaS/PaaS that allows WSGI servers (better yet if there's
 everything already done for Flask).
-
-As said before, py.test (``pip install pytest``) should be installed for
-running the tests. For the code coverage shown above, it also needs the
-``pytest-cov`` package.
 
 
 Turing DSL (Domain Specific Language)
