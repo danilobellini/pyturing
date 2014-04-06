@@ -29,7 +29,7 @@ def pre_tokenizer(data, comment_symbol="#"):
     """
     for line_raw in data.splitlines():
         line = line_raw.split(comment_symbol, 1)[0]
-        if line.rsplit():
+        if line.rstrip():
             yield line
 
 
@@ -53,6 +53,8 @@ def tokenizer(data):
             blocks = ["\n"]
             if keep_last:
                 blocks.append(" ")
+        elif keep_last and not blocks: # Corner case (starting with an space)
+            blocks.append(" ")
         blocks.extend(re.findall(TOKENIZER_REGEX, line))
     for token in blocks:
         yield token
@@ -77,7 +79,6 @@ def raw_rule_generator(data):
             if action:
                 if not config:
                     raise TMSyntaxError("Incomplete rule (missing config)")
-                print(config, action)
                 yield config, action
                 config, action = [], []
                 block = config
@@ -87,8 +88,8 @@ def raw_rule_generator(data):
                 raise TMSyntaxError("Incomplete rule")
         else:
             block.append(token)
-    if block is action:
-        raise TMSyntaxError("Incomplete rule at the end of file")
+    if config or block is action:
+        raise TMSyntaxError("Incomplete rule (unexpected end of tokens)")
 
 
 def sequence_cant_have(*invalids):
@@ -275,7 +276,7 @@ class TuringMachine(OrderedDict):
         Perform one rule in the machine, changing its complete configuration
         (self.index, self.tape and self.mconf) where needed, accordingly.
         """
-        tasks, mco = self[self.mconf, self.scan()]
+        tasks, mco = self[getattr(self, "mconf", None), self.scan()]
         for task in tasks:
             self.perform(task)
         self.mconf = mco

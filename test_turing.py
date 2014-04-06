@@ -5,6 +5,7 @@
 """ Turing machine internals testing module """
 
 from __future__ import unicode_literals, print_function
+import turing
 from turing import (TMSyntaxError, TMLocked, pre_tokenizer, tokenizer,
                     raw_rule_generator, sequence_cant_have,
                     evaluate_symbol_query, TuringMachine)
@@ -165,8 +166,21 @@ class TestRawRuleGenerator(object):
         with raises(StopIteration):
             next(rgen)
 
-    def test_half_rule(self):
-        rgen = raw_rule_generator("q1 1")
+    @p("rule", ["q1 1", "q1 ->", "->", "-> q0"])
+    def test_half_rule(self, rule):
+        rgen = raw_rule_generator(rule)
+        with raises(TMSyntaxError):
+            next(rgen)
+
+    @p("invalid_end", [["q2"], ["q2", "->"]])
+    def test_invalid_tokenizer_unfinished_last_rule(self, invalid_end,
+                                                          monkeypatch):
+        def mock_tokenizer(data):
+            for el in ["q1", "0", "->", "R", "q2", "\n"] + invalid_end:
+                yield el
+        monkeypatch.setattr(turing, "tokenizer", mock_tokenizer)
+        rgen = raw_rule_generator("")
+        assert next(rgen) == (["q1", "0"], ["R", "q2"])
         with raises(TMSyntaxError):
             next(rgen)
 
@@ -182,6 +196,12 @@ class TestRawRuleGenerator(object):
         rgen = raw_rule_generator("q1 1 -> E q0\n" + rule)
         assert next(rgen) == (["q1", "1"], ["E", "q0"])
         with raises(TMSyntaxError):
+            next(rgen)
+
+    def test_missing_first_m_configuration(self):
+        rgen = raw_rule_generator(" -> N q1\n\n")
+        assert next(rgen) == ([" "], ["N", "q1"])
+        with raises(StopIteration):
             next(rgen)
 
     def test_five_rules(self):
@@ -278,6 +298,33 @@ class TestEvaluateSymbolQuery(object):
 
 class TestTuringMachine(object):
 
+    def test_init_empty(self):
+        tm = TuringMachine()
+        assert tm.index == 0
+        assert tm.tape == {}
+        assert len(tm) == 0
+        assert len(tm.inv_dict) == 0
+        assert not hasattr(self, "mconf")
+        with raises(TMLocked):
+            tm["a", "0"] # Rule querying
+        with raises(TMLocked):
+            tm.move()
+
+    def test_init_no_first_m_configuration(self):
+        with raises(TMSyntaxError):
+            TuringMachine(" -> q2")
+
+    def test_scan(self):
+        tm = TuringMachine()
+        msg = "It's only a test"
+        msg_dict = dict(enumerate(msg, -2))
+        tm.tape = msg_dict
+        pairs = list(msg_dict.items())
+        __import__("random").shuffle(pairs)
+        for idx, el in pairs:
+            tm.index = idx
+            assert tm.scan() == el
+
     @p("tape_list", [
         [], ["A"], ["1", "2"], ("1", "2", "3"),
     ])
@@ -362,7 +409,22 @@ class TestTuringMachine(object):
         assert tm.index == index_delta
         assert tm.tape == tape_dict_after
 
-    def test_one_rule_no_tape(self):
+    @p("task", ["Y", "", "None"])
+    def test_perform_and_move_unknown_task(self, task):
+        tm_perform = TuringMachine() # Without rules
+        with raises(ValueError):
+            tm_perform.perform(task)
+        if task.strip(): # Parsing rule makes sense
+            tm_move_parsed = TuringMachine("a None -> {} a".format(task))
+            with raises(ValueError):
+                tm_move_parsed.move()
+        tm_move_setitem = TuringMachine()
+        tm_move_setitem.mconf = "a"
+        tm_move_setitem["a", "None"] = ([task], "a")
+        with raises(ValueError):
+            tm_move_setitem.move()
+
+    def test_move_one_rule_no_tape(self):
         tm = TuringMachine("q4 -> q3")
         assert tm.mconf == "q4" # First m-conf in code is first in simulation
         tm.move()
@@ -370,7 +432,7 @@ class TestTuringMachine(object):
         with raises(TMLocked):
             tm.move()
 
-    def test_two_rules_no_tape(self):
+    def test_move_two_rules_no_tape(self):
         tm = TuringMachine("a -> b\nb None -> R c\n")
         assert tm.mconf == "a"
         tm.move()
@@ -381,7 +443,7 @@ class TestTuringMachine(object):
         with raises(TMLocked):
             tm.move()
 
-    def test_zero_one_zero_one(self):
+    def test_move_zero_one_zero_one(self):
         tm = TuringMachine(
             "a -> P0 R b\n"
             "b -> P1 R a\n"
@@ -438,6 +500,9 @@ class TestTuringMachine(object):
         assert tmcp.index == -2
         assert not hasattr(tm, "mconf")
         assert not hasattr(tmcp, "mconf")
+
+
+class TestTuringMachineBehaviour(object):
 
     def test_turing_first_example(self):
         tm1 = TuringMachine( # On p. 233 of his article
