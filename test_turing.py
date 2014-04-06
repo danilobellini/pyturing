@@ -396,6 +396,49 @@ class TestTuringMachine(object):
         for idx in range(80):
             assert tape[idx] == str(idx % 2)
 
+    def test_copy(self):
+        tm = TuringMachine("q1      -> P0 R q2\n"
+                           "q2 None -> P1 R q1")
+        tm.tape = "Test"
+        tm.perform("R")
+        tm.perform("P1")
+        tmcp = tm.copy()
+        # Rules and inverted rules
+        assert list(tmcp.items()) == list(tm.items())
+        assert list(tmcp.inv_dict.items()) == list(tm.inv_dict.items())
+        # Complete configuration
+        assert tmcp.tape == dict(enumerate("T1st")) == tm.tape
+        assert tmcp.index == 1 == tm.index
+        assert tmcp.mconf == "q1" == tm.mconf
+        tm.move()
+        assert tmcp.tape != tm.tape
+        assert tmcp.index != tm.index
+        assert tmcp.mconf != tm.mconf
+        assert tm.tape == dict(enumerate("T0st"))
+        assert tm.index == 2
+        assert tm.mconf == "q2"
+
+    def test_copy_without_mconf_nor_rules(self):
+        tm = TuringMachine()
+        tm.tape = dict(enumerate("TestTestTest", -2))
+        tm.perform("L")
+        tm.perform("P0")
+        tmcp = tm.copy()
+        # Rules and inverted rules
+        assert list(tmcp.items()) == list(tm.items()) == []
+        assert list(tmcp.inv_dict.items()) == list(tm.inv_dict.items()) == []
+        # Complete configuration
+        assert tmcp.tape == dict(enumerate("T0stTestTest", -2)) == tm.tape
+        assert tmcp.index == -1 == tm.index
+        tmcp.perform("L")
+        tmcp.perform("P1")
+        assert tmcp.tape != tm.tape
+        assert tmcp.index != tm.index
+        assert tmcp.tape == dict(enumerate("10stTestTest", -2))
+        assert tmcp.index == -2
+        assert not hasattr(tm, "mconf")
+        assert not hasattr(tmcp, "mconf")
+
     def test_turing_first_example(self):
         tm1 = TuringMachine( # On p. 233 of his article
             "b None -> P0  R c\n"

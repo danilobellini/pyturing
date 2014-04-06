@@ -287,3 +287,23 @@ class TuringMachine(OrderedDict):
                 if symb not in symbs:
                     return act
         raise TMLocked("No rule found for the current configuration")
+
+    def copy(self):
+        """
+        Returns a shallow copy of this Turing Machine, but with a complete
+        configuration (self.index, self.mconf and self.tape) copy (including
+        the tape).
+        """
+        tm = TuringMachine()
+
+        # Copy the rules
+        tm.update(self)
+        tm.inv_dict.update(self.inv_dict)
+
+        # Copy the complete configuration
+        tm.index = self.index
+        if hasattr(self, "mconf"):
+            tm.mconf = self.mconf
+        tm.tape = self.tape
+
+        return tm
