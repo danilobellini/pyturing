@@ -24,7 +24,7 @@ metadata = {
   "url": "http://github.com/danilobellini/pyturing",
   "description": "A simple Turing machine simulator using Python.",
   "license": "MIT",
-  "tests_requires": ["tox"],
+  "tests_require": ["tox"],
   "cmdclass": {"test": Tox},
 }
 

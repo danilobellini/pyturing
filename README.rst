@@ -72,8 +72,9 @@ environment each one is using tox::
   $ sudo pip install tox
   $ tox
 
-It'll run with Python versions 2.7, 3.2 and 3.3. This package works in these
-Python versions successfully with the same single code. The tests includes
+It'll run with CPython and PyPy (see tox.ini for the specific versions). This
+package works in these Python versions successfully with the same single code
+souce, working in both Python 2.7 and 3.x. The tests includes
 the two examples said in the "About the Turing Machine" section, although
 these aren't for finding something like a "final" m-configuration (indeed,
 they're endless examples).
@@ -178,8 +179,8 @@ the act of programming "for humans" in some (perhaps lazy) sense.
 About this project
 ------------------
 
-Originally made for GCC (Garoa Code Competition), mainly as a way to allow
-Turing Machine Coding Dojos to happen, and also to help people understand what
+Originally made for GCC 2014 (Garoa Code Competition), mainly for possible
+Turing Machine Coding Dojos, and also to help people understand what
 the Turing Machine is, perhaps motivating them to read about the subject,
 including the original/historical papers like the one Turing wrote in 1936.
 
