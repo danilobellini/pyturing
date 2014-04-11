@@ -1,6 +1,9 @@
 Turing Machine in Python
 ========================
 
+.. image:: https://travis-ci.org/danilobellini/pyturing.png?branch=master
+   :target: https://travis-ci.org/danilobellini/pyturing
+
 A simple Turing machine simulator using Python.
 
 This project can be seen as a single implementation with three different
@@ -79,6 +82,9 @@ the two examples said in the "About the Turing Machine" section, although
 these aren't for finding something like a "final" m-configuration (indeed,
 they're endless examples).
 
+You can see these tests running in Travis CI:
+
+https://travis-ci.org/danilobellini/pyturing
 
 Installing
 ----------
