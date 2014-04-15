@@ -10,7 +10,7 @@ from setuptools.command.test import test as TestClass
 class Tox(TestClass):
     def finalize_options(self):
         TestClass.finalize_options(self)
-        self.test_args = []
+        self.test_args = ["-v"] if self.verbose else []
         self.test_suite = True
     def run_tests(self):
         import sys, tox
@@ -39,7 +39,7 @@ See the GitHub project page for more information.
 """
 
 metadata["classifiers"] = [
-    "Development Status :: 2 - Pre-Alpha",
+  "Development Status :: 2 - Pre-Alpha",
   "Environment :: Console",
   "Environment :: Web Environment",
   "Framework :: Flask",
@@ -56,6 +56,7 @@ metadata["classifiers"] = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.2",
   "Programming Language :: Python :: 3.3",
+  "Programming Language :: Python :: 3.4",
   "Programming Language :: Other",
   "Topic :: Software Development",
   "Topic :: Software Development :: Interpreters",

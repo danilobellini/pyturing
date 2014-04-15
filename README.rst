@@ -2,7 +2,7 @@ Turing Machine in Python
 ========================
 
 .. image:: https://travis-ci.org/danilobellini/pyturing.png?branch=master
-   :target: https://travis-ci.org/danilobellini/pyturing
+  :target: https://travis-ci.org/danilobellini/pyturing
 
 A simple Turing machine simulator using Python.
 
