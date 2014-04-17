@@ -6,6 +6,7 @@
 
 from setuptools import setup
 from setuptools.command.test import test as TestClass
+from pyturing import __version__
 
 class Tox(TestClass):
     def finalize_options(self):
@@ -18,12 +19,13 @@ class Tox(TestClass):
 
 metadata = {
   "name": "pyturing",
-  "version": "0.0dev",
+  "version": __version__,
   "author": "Danilo J. S. Bellini and Nicolas França",
   "author_email": "danilo [dot] bellini [at] gmail [dot] com",
   "url": "http://github.com/danilobellini/pyturing",
   "description": "A simple Turing machine simulator using Python.",
   "license": "MIT",
+  "py_modules": ["pyturing"],
   "tests_require": ["tox"],
   "cmdclass": {"test": Tox},
 }

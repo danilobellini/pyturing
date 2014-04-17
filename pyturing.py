@@ -13,6 +13,8 @@ __all__ = ["TMSyntaxError", "TMLocked", "pre_tokenizer", "tokenizer",
            "evaluate_symbol_query", "config_parser",
            "action_parser", "TuringMachine"]
 
+__version__ = "0.1dev"
+
 
 class TMSyntaxError(SyntaxError):
     """ Syntax errors for a Turing machine code (rules description) """

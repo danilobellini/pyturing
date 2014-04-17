@@ -11,7 +11,7 @@ interfaces for using the Turing machines:
 
 - Python API, where this machine can be used both as a Turing a-machine
   (automatic machine) or as a c-machine (choice machine);
-- CLI (Command Line Interface), for a-machines; [*TODO*]
+- CLI (Command Line Interface), for a-machines;
 - Web UI in Flask, for a-machines.
 
 

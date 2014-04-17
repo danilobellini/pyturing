@@ -21,4 +21,6 @@ Here are some ideas that might be implemented in this project.
 - [CLI] Create a basic Command-Line Interface that "runs" a given Turing
   machine file with a given "input" (starting tapes) file, like calling
   "./turing.py my_machine.tm tests.tape"
-
+- c-machine API
+- Universal Turing Machine implementation as in Turing's 1936 paper
+- Example or test that runs Universal Turing Machine in itself

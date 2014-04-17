@@ -5,10 +5,10 @@
 """ Turing machine internals testing module """
 
 from __future__ import unicode_literals, print_function
-import turing
-from turing import (TMSyntaxError, TMLocked, pre_tokenizer, tokenizer,
-                    raw_rule_generator, sequence_cant_have,
-                    evaluate_symbol_query, TuringMachine)
+import pyturing
+from pyturing import (TMSyntaxError, TMLocked, pre_tokenizer, tokenizer,
+                      raw_rule_generator, sequence_cant_have,
+                      evaluate_symbol_query, TuringMachine)
 from pytest import raises, mark
 from types import GeneratorType
 p = mark.parametrize
@@ -178,7 +178,7 @@ class TestRawRuleGenerator(object):
         def mock_tokenizer(data):
             for el in ["q1", "0", "->", "R", "q2", "\n"] + invalid_end:
                 yield el
-        monkeypatch.setattr(turing, "tokenizer", mock_tokenizer)
+        monkeypatch.setattr(pyturing, "tokenizer", mock_tokenizer)
         rgen = raw_rule_generator("")
         assert next(rgen) == (["q1", "0"], ["R", "q2"])
         with raises(TMSyntaxError):

@@ -5,7 +5,7 @@
 """ Main application file """
 
 from flask import Flask, render_template, request
-from turing import TuringMachine
+from pyturing import TuringMachine
 
 app = Flask(__name__)
 
