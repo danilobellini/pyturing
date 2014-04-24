@@ -4,7 +4,7 @@
 # MIT Licensed. See COPYING.TXT for more information.
 """ Main application file """
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from pyturing import TuringMachine
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def ajax_simulate():
     tm = TuringMachine(request.form["machine"])
     for el in range(3000):
       tm.move()
-    return str(tm.tape)
+    return jsonify(tm.tape)
 
 if __name__ == "__main__":
     app.run(debug=True)
